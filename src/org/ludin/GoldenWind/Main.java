@@ -13,8 +13,11 @@ public class Main extends JavaPlugin
     public void onEnable()
     {
         saveDefaultConfig();
-        System.out.println(ChatColor.GREEN + "[GoldenWind Plugin] Fly plugin initiated");
-        //this.getCommand("fly").setExecutor(new SpawnListener());
+        System.out.println(ChatColor.GREEN + "[GoldenWind Plugin] GoldenWind plugin initiated");
+
+        this.getCommand("gw").setExecutor( new GoldenWindCommandExecutor(this) );
+        this.getCommand("goldenwind").setExecutor( new GoldenWindCommandExecutor(this) );
+
         getServer().getPluginManager().registerEvents(new SpawnListener(this), this);
 
         ConfigurationSection config = getConfig().getConfigurationSection("Explosion");

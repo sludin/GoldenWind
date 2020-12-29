@@ -4,11 +4,13 @@ version: 0.1
 author: sludin
 api-version: 1.16
 commands:
-  basic:
-    description: This is a demo command.
-    usage: /fly
-    permission: <plugin name>.basic
+  gw:
+    description: GoldenWind server command
+    usage: /gw
+    permission: GoldenWind.gw
     permission-message: You don't have <permission>
-  fly:
-    description: Says hello
-    usage: /fly
+  goldenwind:
+    description: GoldenWind server command
+    usage: /goldenwind
+    permission: GoldenWind.goldenwind
+    permission-message: You don't have <permission>
