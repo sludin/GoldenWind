@@ -1,0 +1,4 @@
+Explosion:
+  Enabled: true
+  Radius: 16
+  Fire: true

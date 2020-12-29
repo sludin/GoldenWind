@@ -1,0 +1,14 @@
+name: GoldenWind
+main: org.ludin.GoldenWind.Main
+version: 0.1
+author: sludin
+api-version: 1.16
+commands:
+  basic:
+    description: This is a demo command.
+    usage: /fly
+    permission: <plugin name>.basic
+    permission-message: You don't have <permission>
+  fly:
+    description: Says hello
+    usage: /fly

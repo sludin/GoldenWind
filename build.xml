@@ -1,0 +1,72 @@
+<project name="GoldenWind" default="plugin" basedir=".">
+  <description>
+    Bukkit plugin build file
+  </description>
+
+  <!-- set global properties for this build -->
+  <property name="src" location="src"/>
+  <property name="build" location="build"/>
+  <property name="bin" location="bin"/>
+  <property name="libs" location="../libs"/>
+  <basename property="plugin" file="${basedir}"/>
+  <property name="spigotjar" location="${libs}/spigot-api-1.16.4-R0.1-20201222.210427-34-shaded.jar"/>
+  <property name="server.name" value="ymir"/>
+  <property name="server.path" value="/var/minecraft/plugins"/>
+  
+  <path id="classpath">
+    <pathelement location="${spigotjar}"/>
+  </path>
+
+  <target name="init">
+    <tstamp/>
+    <mkdir dir="${build}"/>
+  </target>
+
+  <target name="compile" depends="init"
+          description="compile the source">
+
+    <javac srcdir="${src}"
+           destdir="${build}"
+           classpathref="classpath"
+           includeantruntime="false"/>
+
+    <copy file="plugin.yml" todir="${build}"/>
+    <copy file="config.yml" todir="${build}"/>
+  </target>
+
+  <target name="plugin" depends="compile">
+    <mkdir dir="${bin}"/>
+    <jar jarfile="${bin}/${plugin}.jar" basedir="${build}"/>
+  </target>
+
+  <target name="push" depends="plugin">
+
+    <echo message="${server.name}"/>
+    <exec executable="scp">
+      <arg value="${bin}/${plugin}.jar"/>
+      <arg value="${server.name}:${server.path}"/>
+    </exec>
+    <exec executable="ssh">
+      <arg value="${server.name}"/>
+      <arg value="mcrcon"/>
+      <arg value="-p"/>
+      <arg value="letmein"/>
+      <arg value="reload"/>
+      <arg value="&quot;reload confirm&quot;"/>
+    </exec>
+    <exec executable="ssh">
+      <arg value="${server.name}"/>
+      <arg value="tail"/>
+      <arg value="-F"/>
+      <arg value="/var/minecraft/logs/latest.log"/>
+    </exec>
+
+  </target>
+  
+  <target name="clean">
+    <delete dir="${build}"/>
+    <delete dir="${bin}"/>
+  </target>
+
+  
+</project>
