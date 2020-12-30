@@ -17,31 +17,53 @@ public class GoldenWindCommandExecutor implements CommandExecutor
   @Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
   {
-    plugin.getLogger().info( "Entering onCommand" );
     if ( args.length == 0 ) return false;
-    plugin.getLogger().info( "Past first check" );
-    plugin.getLogger().info( "args length: " + args.length );
-
-    plugin.getLogger().info( "args[0] == " + args[0] );
                              
     
     if ( args[0].equalsIgnoreCase("explode") && args.length > 1 )
     {
-      plugin.getLogger().info( "In explode command" );
-      
       if ( args[1].equalsIgnoreCase("enable") && args.length > 2 )
       {
-        plugin.getLogger().info( "In enable command: " + args[2] );
 
         if ( args[2].equalsIgnoreCase("true") )
         {
           plugin.getConfig().set("Explosion.Enabled", true);
-          plugin.getLogger().info( "Setting explody to true" );
         }
         else if ( args[2].equalsIgnoreCase("false") )
         {
           plugin.getConfig().set("Explosion.Enabled", false);
-          plugin.getLogger().info( "Setting explody to false" );
+        }
+        else
+        {
+          return false;
+        }
+
+        plugin.saveConfig();
+        return true;
+      }
+      else if ( args[1].equalsIgnoreCase("radius") && args.length > 2 )
+      {
+        float radius = Float.parseFloat(args[2]);
+
+        if ( radius < 0 || radius > 64 )
+        {
+          return false;
+        }
+
+        plugin.getConfig().set("Explosion.Radius", radius );
+        plugin.saveConfig();
+
+        return true;
+      }
+      else if ( args[1].equalsIgnoreCase("fire") && args.length > 2 )
+      {
+        if ( args[2].equalsIgnoreCase("true") )
+        {
+            plugin.getConfig().set("Explosion.Fire", true);
+        }
+        else if ( args[2].equalsIgnoreCase("false") )
+        {
+          plugin.getConfig().set("Explosion.Fire", false);
         }
         else
         {
