@@ -1,5 +1,5 @@
 name: GoldenWind
-main: org.ludin.GoldenWind.Main
+main: org.ludin.GoldenWind.GoldenWind
 version: 0.1
 author: sludin
 api-version: 1.16

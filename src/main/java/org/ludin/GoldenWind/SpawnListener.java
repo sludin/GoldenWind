@@ -53,8 +53,8 @@ public class SpawnListener implements Listener {
         if ( entity instanceof Creeper )
         {
           Creeper c = (Creeper) entity;
-          c.setMaxFuseTicks(20);
-          c.setExplosionRadius(4);
+          c.setMaxFuseTicks(30);
+          c.setExplosionRadius(3);
         }
       }
       
