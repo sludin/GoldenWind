@@ -1,6 +1,7 @@
 package org.ludin.GoldenWind;
 
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import java.util.ArrayList;
 
@@ -34,6 +35,8 @@ public class GoldenWind extends JavaPlugin
     System.out.println( GoldenWind.PREFIX + "Settings: Exploder: " + enabled + " " + String.valueOf(radius) + " " + fire );
 
     sleeping = new ArrayList<Player>();
+
+    Bukkit.getScheduler().runTaskTimer(this, new LoggerTask(this), 20*60, 20*60);
     
   }
 
