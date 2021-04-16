@@ -1,4 +1,12 @@
 Explosion:
-  Enabled: true
+  Enabled: false
   Radius: 16
   Fire: true
+  Areas:
+    - 3000,5,3000 3100,5,3100
+
+PlayerLog:
+  Enabled: true
+
+
+  

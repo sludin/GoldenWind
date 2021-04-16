@@ -31,57 +31,15 @@ public class SpawnListener implements Listener {
     }
     else if ( entity instanceof Monster )
     {
-      ConfigurationSection config = plugin.getConfig().getConfigurationSection("Explosion");
-
-      if ( config.getBoolean("Enabled") == true )
+      if ( entity instanceof Creeper )
       {
-        Location loc = entity.getLocation();
-        loc.subtract( 0, 1, 0 );
-        
-        World w = loc.getWorld();
-
-        int radius = config.getInt("Radius");
-        Boolean fire = config.getBoolean("Fire");
-        w.createExplosion( loc, radius, fire );
-      
-        event.setCancelled(true);
-
-        System.out.println( GoldenWind.PREFIX + "Monster BOOM");
-      }
-      else
-      {
-        if ( entity instanceof Creeper )
-        {
-          Creeper c = (Creeper) entity;
-          c.setMaxFuseTicks(30);
-          c.setExplosionRadius(3);
-        }
+        Creeper c = (Creeper) entity;
+        c.setMaxFuseTicks(30);
+        c.setExplosionRadius(3);
       }
       
     }
-      /*
-    else if ( entity instanceof WanderingTrader )
-    {
-        WanderingTrader trader = (WanderingTrader) entity;
-
-        System.out.println(GoldenWind.PREFIX + "Wandering trader spawn");
-        List<MerchantRecipe> recipes = new ArrayList<>(trader.getRecipes());
-
-        recipes.clear();
-                
-        MerchantRecipe recipe = new MerchantRecipe( new ItemStack(Material.GRASS_BLOCK), 2);
-        recipe.addIngredient( new ItemStack( Material.DIAMOND, 64));
-        recipes.add(recipe);
-    
-        trader.setRecipes(recipes);
-
-    }
-       */
-      
-    
   }
-
-
 }
 
 

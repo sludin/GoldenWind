@@ -26,6 +26,7 @@ public class GoldenWind extends JavaPlugin
     getServer().getPluginManager().registerEvents(new GenericEventListener(this), this);
     getServer().getPluginManager().registerEvents(new PlayerInteractListener(this), this);
     getServer().getPluginManager().registerEvents(new SleepListener(this), this);
+    getServer().getPluginManager().registerEvents(new Exploder(this), this);
         
         
     ConfigurationSection config = getConfig().getConfigurationSection("Explosion");
