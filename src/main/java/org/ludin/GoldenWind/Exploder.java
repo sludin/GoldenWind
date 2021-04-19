@@ -62,9 +62,9 @@ class Area {
     double y = loc.getY();
     double z = loc.getZ();
 
-    System.out.println( "loc=" + x + "," + y + "," + z
-                        + " from=" + x1 + "," + y1 + "," + z1
-                        + " to="  + x2 + "," + y2 + "," + z2 );
+    //    System.out.println( "loc=" + x + "," + y + "," + z
+    //                        + " from=" + x1 + "," + y1 + "," + z1
+    //                    + " to="  + x2 + "," + y2 + "," + z2 );
 
     if ( x >= x1 && x <= x2 )
     {
@@ -102,12 +102,12 @@ public class Exploder implements Listener {
         for (Object a : areasConfig) {
           String s = (String) a;
 
-          log.info(s);
+          //          log.info(s);
           
           String[] parts = s.split(" +");
           if ( parts.length == 2 )
           {
-            log.info(parts[0] + " - " + parts[1]);
+            //            log.info(parts[0] + " - " + parts[1]);
 
             String[] coordsFrom = parts[0].split(",");
             String[] coordsTo = parts[1].split(",");

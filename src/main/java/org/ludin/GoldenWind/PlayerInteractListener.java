@@ -1,6 +1,7 @@
 package org.ludin.GoldenWind;
 
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.ArrayList;
 
 import org.bukkit.entity.Villager;
@@ -57,6 +58,8 @@ public class PlayerInteractListener implements Listener {
   @EventHandler
   public void onInteract(PlayerInteractAtEntityEvent e) {
 
+    Logger log = plugin.getLogger();
+    
     if (e.getRightClicked() instanceof Villager) {
 
       Villager villager = (Villager) e.getRightClicked();
