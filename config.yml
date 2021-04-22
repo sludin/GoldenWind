@@ -1,4 +1,4 @@
-Explosion:
+ExplodingMobs:
   Enabled: false
   Radius: 16
   Fire: true
@@ -8,5 +8,22 @@ Explosion:
 PlayerLog:
   Enabled: true
 
-
+SleepOnHalf:
+  Enabled: true
+  Ratio: 50
   
+EnvironmentMods:
+  BlockIronGolems: true
+  BlockVillagerTrades: true
+  ModifyTraderTrades: true
+  BlockMobFallDamage: true
+  CreeperBuff:
+    FuseTicks: 30
+    DamageRadius: 3
+
+Items:
+  MendingNetherite: true
+  BlockMending: true
+
+
+

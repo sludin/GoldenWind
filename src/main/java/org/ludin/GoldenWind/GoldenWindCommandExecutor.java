@@ -2,90 +2,88 @@ package org.ludin.GoldenWind;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.TabExecutor;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
 import org.bukkit.command.Command;
 
 
-public class GoldenWindCommandExecutor implements CommandExecutor
+
+public class GoldenWindCommandExecutor implements CommandExecutor, TabExecutor
 {
 
   private GoldenWind plugin;
+
+  Map<String,GoldenWindCommand> commandMap;
   
 
-
-  /**
-   * Creates a new <code>GoldenWindCommandExecutor</code> instance.
-   *
-   * @param plugin a <code>GoldenWind</code> value
-   */
-  public GoldenWindCommandExecutor( GoldenWind plugin )
+  GoldenWindCommandExecutor( GoldenWind plugin )
   {
     this.plugin = plugin;
+    commandMap = new HashMap<>();
+
+    commandMap.put( "explode", new ExplodingMobs( plugin ) );
+    commandMap.put( "halfsleep", new SleepOnHalf( plugin ) );
+    commandMap.put( "playerlog", new PlayerLog( plugin ) );
+    commandMap.put( "environment", new EnvironmentMods( plugin ) );
+    commandMap.put( "items", new Items( plugin ) );
   }
+  
+
+  @Override
+  public List<String> onTabComplete( CommandSender sender, Command command, String alias, String[] args )
+  {
+    List<String> tabComplete = new ArrayList<>();
+
+    if ( args.length == 1 )
+    {
+      for ( String name: commandMap.keySet() )
+      {
+        if ( name.startsWith(args[0]) )
+        {
+          tabComplete.add(name);
+        }
+      }
+    }
+    else
+    {
+      GoldenWindCommand cmd = commandMap.get( args[0] );
+      if ( cmd != null )
+      {
+        tabComplete = cmd.complete( GoldenWindCommand.slice( args, 1 ) );
+      }
+    }
+    
+    return tabComplete;
+  }
+
+
 
   
   @Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
   {
-    if ( args.length == 0 ) return false;
+    if ( args.length < 2 ) return false;
 
-    if ( args[0].equalsIgnoreCase("explode") && args.length > 1 )
+    Logger log = plugin.getLogger();
+
+    GoldenWindCommand command = commandMap.get(args[0]);
+    if ( command == null )
     {
-      if ( args[1].equalsIgnoreCase("enable") && args.length > 2 )
-      {
-
-        if ( args[2].equalsIgnoreCase("true") )
-        {
-          plugin.getConfig().set("Explosion.Enabled", true);
-        }
-        else if ( args[2].equalsIgnoreCase("false") )
-        {
-          plugin.getConfig().set("Explosion.Enabled", false);
-        }
-        else
-        {
-          return false;
-        }
-
-        plugin.saveConfig();
-        return true;
-      }
-      else if ( args[1].equalsIgnoreCase("radius") && args.length > 2 )
-      {
-        float radius = Float.parseFloat(args[2]);
-
-        if ( radius < 0 || radius > 64 )
-        {
-          return false;
-        }
-
-        plugin.getConfig().set("Explosion.Radius", radius );
-        plugin.saveConfig();
-
-        return true;
-      }
-      else if ( args[1].equalsIgnoreCase("fire") && args.length > 2 )
-      {
-        if ( args[2].equalsIgnoreCase("true") )
-        {
-          plugin.getConfig().set("Explosion.Fire", true);
-        }
-        else if ( args[2].equalsIgnoreCase("false") )
-        {
-          plugin.getConfig().set("Explosion.Fire", false);
-        }
-        else
-        {
-          return false;
-        }
-
-        plugin.saveConfig();
-        return true;
-      }
-      
       return false;
     }
-    
 
+    command.dispatch( args[1], GoldenWindCommand.slice(args, 2) );
+
+    plugin.saveConfig();
+
+    log.info( plugin.getConfig().saveToString() );
+    
     return false;
 	}
   

@@ -6,7 +6,7 @@
 
   <groupId>org.ludin.GoldenWind</groupId>
   <artifactId>GoldenWind</artifactId>
-  <version>1.0</version>
+  <version>0.2</version>
   <packaging>jar</packaging>
   
   <name>GoldenWind</name>
@@ -31,7 +31,7 @@
     <dependency>
       <groupId>org.spigotmc</groupId>
       <artifactId>spigot-api</artifactId>
-      <version>1.16.5-R0.1-SNAPSHOT</version>
+      <version>1.16.5-R0.1-20210420</version>
     </dependency>
   </dependencies>
   

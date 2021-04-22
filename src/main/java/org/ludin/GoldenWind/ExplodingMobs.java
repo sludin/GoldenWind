@@ -2,13 +2,10 @@ package org.ludin.GoldenWind;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Creeper;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.event.EventHandler;
@@ -62,7 +59,7 @@ class Area {
     double y = loc.getY();
     double z = loc.getZ();
 
-    //    System.out.println( "loc=" + x + "," + y + "," + z
+    //    log.info( "loc=" + x + "," + y + "," + z
     //                        + " from=" + x1 + "," + y1 + "," + z1
     //                    + " to="  + x2 + "," + y2 + "," + z2 );
 
@@ -81,17 +78,65 @@ class Area {
 }
 
 
-public class Exploder implements Listener {
+public class ExplodingMobs extends GoldenWindCommand implements Listener {
 
-  private GoldenWind plugin;
   private static List<Area> areas = new ArrayList<>();
-  
-  public Exploder( GoldenWind plugin )
-  {
-    this.plugin = plugin;
-    Logger log = plugin.getLogger();
 
-    ConfigurationSection config = plugin.getConfig().getConfigurationSection("Explosion");
+  public final static String CONFIG_NAME = "ExplodingMobs";
+
+  
+  public ExplodingMobs( GoldenWind plugin )
+  {
+    super(plugin);
+
+    registerCommand( "enable", this::enable );
+    registerCommand( "disable", this::disable );
+    registerCommand( "radius", this::radius, 1 );
+    registerTFCommand( "fire", CONFIG_NAME, "Fire" );
+
+    initArea();
+  }
+  
+  @EventHandler
+  public void onSpawn(CreatureSpawnEvent event) {
+    LivingEntity entity = event.getEntity();
+  
+    if ( entity instanceof Monster )
+    {
+      ConfigurationSection config = plugin.getConfig().getConfigurationSection("ExplodingMobs");
+      
+      if ( config.getBoolean("Enabled") == true )
+      {
+        Location loc = entity.getLocation();
+
+        boolean inArea = false;
+        for ( Area a: areas )
+        {
+          inArea |= a.inArea(loc);
+        }
+
+        if ( inArea )
+        {
+          loc.subtract(0, 1, 0);
+
+          World w = loc.getWorld();
+
+          int radius = config.getInt("Radius");
+          Boolean fire = config.getBoolean("Fire");
+          w.createExplosion(loc, radius, fire);
+
+          event.setCancelled(true);
+
+          log.info( "Monster BOOM");
+        }
+      }
+    }
+  }
+
+
+  private void initArea()
+  {
+    ConfigurationSection config = plugin.getConfig().getConfigurationSection(CONFIG_NAME);
     if ( config != null )
     {
       List<?> areasConfig = config.getList("Areas");
@@ -143,45 +188,42 @@ public class Exploder implements Listener {
         }
       }
     }
+
+  }
+  
+  
+  boolean enable( String[] args )
+  {
+    config.set( CONFIG_NAME + ".Enabled", true);
+    return true;
+  }
+    
+  boolean disable( String[] args )
+  {
+    config.set( CONFIG_NAME + ".Enabled", false);
+    return true;
   }
 
-  
-
-  
-  @EventHandler
-  public void onSpawn(CreatureSpawnEvent event) {
-    LivingEntity entity = event.getEntity();
-  
-    if ( entity instanceof Monster )
+  boolean radius( String[] args )
+  {
+    try
     {
-      ConfigurationSection config = plugin.getConfig().getConfigurationSection("Explosion");
-      
-      if ( config.getBoolean("Enabled") == true )
+      float radius = Float.parseFloat(args[0]);
+        
+      if ( radius < 0 || radius > 64 )
       {
-        Location loc = entity.getLocation();
-
-        boolean inArea = false;
-        for ( Area a: areas )
-        {
-          inArea |= a.inArea(loc);
-        }
-
-        if ( inArea )
-        {
-          loc.subtract(0, 1, 0);
-
-          World w = loc.getWorld();
-
-          int radius = config.getInt("Radius");
-          Boolean fire = config.getBoolean("Fire");
-          w.createExplosion(loc, radius, fire);
-
-          event.setCancelled(true);
-
-          System.out.println(GoldenWind.PREFIX + "Monster BOOM");
-        }
+        return false;
       }
+      config.set( CONFIG_NAME + ".Radius", radius );
     }
+    catch( java.lang.NumberFormatException e )
+    {
+      return false;
+    }
+
+    return true;
   }
+
+
 }
 

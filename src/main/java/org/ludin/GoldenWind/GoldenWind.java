@@ -2,7 +2,6 @@ package org.ludin.GoldenWind;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
 import java.util.ArrayList;
 
 import org.bukkit.entity.Player;
@@ -17,27 +16,30 @@ public class GoldenWind extends JavaPlugin
   public void onEnable()
   {
     saveDefaultConfig();
-    System.out.println( GoldenWind.PREFIX + "Plugin initiated");
+    getConfig().options().copyDefaults();
     
-    this.getCommand("gw").setExecutor( new GoldenWindCommandExecutor(this) );
-    this.getCommand("goldenwind").setExecutor( new GoldenWindCommandExecutor(this) );
+    getLogger().info( "Plugin initiated");
+
+    GoldenWindCommandExecutor gwe = new GoldenWindCommandExecutor(this);
+
+    this.getCommand("gw").setExecutor( gwe );
+    this.getCommand("goldenwind").setExecutor( gwe );
+    this.getCommand("gw").setTabCompleter(gwe);
+    this.getCommand("goldenwind").setTabCompleter(gwe);
     
-    getServer().getPluginManager().registerEvents(new SpawnListener(this), this);
-    getServer().getPluginManager().registerEvents(new GenericEventListener(this), this);
-    getServer().getPluginManager().registerEvents(new PlayerInteractListener(this), this);
-    getServer().getPluginManager().registerEvents(new SleepListener(this), this);
-    getServer().getPluginManager().registerEvents(new Exploder(this), this);
+    
+    getServer().getPluginManager().registerEvents(new ExplodingMobs(this), this);
+    getServer().getPluginManager().registerEvents(new SleepOnHalf(this), this);
+    getServer().getPluginManager().registerEvents(new EnvironmentMods(this), this);
+    //    getServer().getPluginManager().registerEvents(new PlayerLog(this), this);
+    getServer().getPluginManager().registerEvents(new Items(this), this);
+    getServer().getPluginManager().registerEvents(new LootTableListener(this), this);
         
-        
-    ConfigurationSection config = getConfig().getConfigurationSection("Explosion");
-    int radius = config.getInt("Radius");
-    Boolean fire = config.getBoolean("Fire");
-    Boolean enabled = config.getBoolean("Enabled");
-    System.out.println( GoldenWind.PREFIX + "Settings: Exploder: " + enabled + " " + String.valueOf(radius) + " " + fire );
+    getLogger().info(getConfig().saveToString());
 
     sleeping = new ArrayList<Player>();
 
-    Bukkit.getScheduler().runTaskTimer(this, new LoggerTask(this), 20*60, 20*60);
+    Bukkit.getScheduler().runTaskTimer(this, new PlayerLog(this), 20*60, 20*60);
     
   }
 
@@ -49,7 +51,7 @@ public class GoldenWind extends JavaPlugin
   @Override
   public void onDisable()
   {
-    System.out.println( GoldenWind.PREFIX + "Plugin shutting down");
+    getLogger().info( "Plugin shutting down");
   }
 }
 
