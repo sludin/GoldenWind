@@ -91,7 +91,7 @@ public class ExplodingMobs extends GoldenWindCommand implements Listener {
 
     registerCommand( "enable", this::enable );
     registerCommand( "disable", this::disable );
-    registerCommand( "radius", this::radius, 1 );
+    registerCommand( "radius", this::radius, 1, new String[]{"<double>"} );
     registerTFCommand( "fire", CONFIG_NAME, "Fire" );
 
     initArea();

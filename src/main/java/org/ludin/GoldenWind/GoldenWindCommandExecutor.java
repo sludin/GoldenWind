@@ -32,6 +32,7 @@ public class GoldenWindCommandExecutor implements CommandExecutor, TabExecutor
     commandMap.put( "playerlog", new PlayerLog( plugin ) );
     commandMap.put( "environment", new EnvironmentMods( plugin ) );
     commandMap.put( "items", new Items( plugin ) );
+    commandMap.put( "fastcarts", new FastCarts( plugin ) );
   }
   
 

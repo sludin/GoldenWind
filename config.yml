@@ -25,5 +25,8 @@ Items:
   MendingNetherite: true
   BlockMending: true
 
+FastCarts:
+  Enabled: true
+  Speed: 0.4
 
 
