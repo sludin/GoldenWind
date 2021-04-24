@@ -29,4 +29,12 @@ FastCarts:
   Enabled: true
   Speed: 0.4
 
+PlayerMask:
+  Enabled: true
+  Players:
+    - Shaztsu
+
+BlockAutoFish:
+  Enable: true
+  Range: 0.3
 

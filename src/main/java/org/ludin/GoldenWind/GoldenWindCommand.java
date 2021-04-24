@@ -1,6 +1,6 @@
 package org.ludin.GoldenWind;
 
-import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,9 +18,12 @@ interface Completer
 
 public class GoldenWindCommand implements Completer
 {
-  GoldenWind plugin;
-  FileConfiguration config;
-  Logger log;
+  protected GoldenWind plugin;
+  protected ConfigurationSection config;
+  protected Logger log;
+  private Map<String,Cmd> methodMap;
+  private Map<String,GoldenWindCommand> subCommandMap;
+  private String configName;
 
   public static String[] slice( String[] arr, int start )
   {
@@ -47,25 +50,22 @@ public class GoldenWindCommand implements Completer
     return slice;
   }
 
-  public GoldenWindCommand( GoldenWind plugin )
+  public GoldenWindCommand( GoldenWind plugin, String configName )
   {
     this.plugin = plugin;
-    this.config = plugin.getConfig();
-    this.log    = plugin.getLogger();
-    
+    this.log = plugin.getLogger();
+    this.configName = configName;
+    this.config = plugin.getConfig().getConfigurationSection(configName);
+
     methodMap = new HashMap<>();
     subCommandMap = new HashMap<>();
   }
 
-  Map<String,Cmd> methodMap;
-  Map<String,GoldenWindCommand> subCommandMap;
 
   public boolean dispatch( String cmdName, String[] args )
   {
     args = args == null ? new String[0] : args;
 
-    log.info( "Command name: "+ cmdName );
-    
     Cmd cmd = methodMap.get( cmdName );
     if ( cmd != null )
     {
@@ -110,38 +110,45 @@ public class GoldenWindCommand implements Completer
 
     return tabComplete;
   }
+
+
+  protected boolean enabled()
+  {
+    return config.getBoolean("Enabled");
+  }
+
   
 
 
-  void registerSubCommand( String name, GoldenWindCommand cmd )
+  protected void registerSubCommand( String name, GoldenWindCommand cmd )
   {
     subCommandMap.put( name, cmd );
   }
   
-  void registerCommand( String name, Predicate<String[]> method )
+  protected void registerCommand( String name, Predicate<String[]> method )
   {
     registerCommand( name, method, 0, null );
   }
 
-  void registerCommand( String name, Predicate<String[]> method, int nArgs )
+  protected void registerCommand( String name, Predicate<String[]> method, int nArgs )
   {
     registerCommand( name, method, nArgs, null );
   }
 
-  void registerCommand( String name, Predicate<String[]> method, int nArgs, String[] values )
+  protected void registerCommand( String name, Predicate<String[]> method, int nArgs, String[] values )
   {
     Cmd cmd = new Cmd( name, method, nArgs, values );
     methodMap.put( name, cmd );
   }
 
-  void registerTFCommand( String name, String configName, String variable )
+  protected void registerTFCommand( String name, String variable )
   {
     registerCommand( name,
                      (args) -> {
                        if ( args[0].equalsIgnoreCase("true") ||
                             args[0].equalsIgnoreCase("false") )
                        {
-                         config.set( configName + "." + variable, args[0].equalsIgnoreCase("true") ? true : false );
+                         config.set( variable, args[0].equalsIgnoreCase("true") ? true : false );
                          return true;
                        }
                        return false;
@@ -151,8 +158,64 @@ public class GoldenWindCommand implements Completer
 
   }
 
+  protected void registerEnableDisableCommand()
+  {
+    registerCommand( "enable",
+                     (args) -> {
+                         config.set( "Enabled", true );
+                         return true;
+                     });
+    registerCommand( "disable",
+                     (args) -> {
+                         config.set( "Enabled", false );
+                         return true;
+                     });
+  }
+  
 
-  List<String> complete( String[] args )
+  protected void registerDoubleCommand( String command, String configEntry )
+  {
+    registerCommand( command,
+                     (args) -> {
+                       try
+                       {
+                         double value = Double.parseDouble(args[0]);
+                         value = value < 0 ? 0 : value;
+                         config.set( configEntry, value );
+                       }
+                       catch( NumberFormatException e )
+                       {
+                         return false;
+                       }
+                       return true;
+                     },
+                     1,
+                     new String[]{"<double>"} );
+    
+  }
+  
+  protected void registerIntCommand( String command, String configEntry )
+  {
+    registerCommand( command,
+                     (args) -> {
+                       try
+                       {
+                         int value = Integer.parseInt(args[0]);
+                         value = value < 0 ? 0 : value;
+                         config.set( configEntry, value );
+                       }
+                       catch( NumberFormatException e )
+                       {
+                         return false;
+                       }
+                       return true;
+                     },
+                     1,
+                     new String[]{"<int>"} );
+    
+  }
+
+  public List<String> complete( String[] args )
   {
     List<String> tabComplete = new ArrayList<>();
 
@@ -175,10 +238,7 @@ public class GoldenWindCommand implements Completer
     return tabComplete;
   }
 
-  void saveConfig()
-  {
-    plugin.saveConfig();
-  }
+  
 
 }
 

@@ -60,9 +60,9 @@ public class EnvironmentMods extends GoldenWindCommand implements Listener {
   class CreeperBuff extends GoldenWindCommand {
 
     public CreeperBuff(GoldenWind plugin) {
-      super(plugin);
-      registerCommand("ticks", this::ticks, 1);
-      registerCommand("radius", this::radius, 1);
+      super(plugin, CONFIG_NAME);
+      registerCommand("ticks", this::ticks, 1, new String[]{ "<int>" });
+      registerCommand("radius", this::radius, 1, new String[]{ "<double>" });
     }
 
     boolean ticks( String[] args )
@@ -70,7 +70,7 @@ public class EnvironmentMods extends GoldenWindCommand implements Listener {
       try
       {
         int ticks = Integer.parseInt(args[0]);
-        config.set( CONFIG_NAME + ".CreeperBuff.FuseTicks", ticks);
+        config.set( "CreeperBuff.FuseTicks", ticks);
       }
       catch( NumberFormatException e )
       {
@@ -89,7 +89,7 @@ public class EnvironmentMods extends GoldenWindCommand implements Listener {
         {
           radius = 32;
         }
-        config.set( CONFIG_NAME + ".CreeperBuff.DamageRadius", radius);
+        config.set( "CreeperBuff.DamageRadius", radius);
       }
       catch( NumberFormatException e )
       {
@@ -105,12 +105,12 @@ public class EnvironmentMods extends GoldenWindCommand implements Listener {
   
   public EnvironmentMods( GoldenWind plugin )
   {
-    super(plugin);
+    super(plugin, CONFIG_NAME);
     
-    registerTFCommand( "blockgolems", CONFIG_NAME, "BlockIronGolems" );
-    registerTFCommand( "blocktrades", CONFIG_NAME, "BlockVillagerTrades" );
-    registerTFCommand( "modifytraders", CONFIG_NAME, "ModifyTraderTrades" );
-    registerTFCommand( "blockmobfalldamage", CONFIG_NAME, "BlockMobFallDamage" );
+    registerTFCommand( "blockgolems","BlockIronGolems" );
+    registerTFCommand( "blocktrades", "BlockVillagerTrades" );
+    registerTFCommand( "modifytraders", "ModifyTraderTrades" );
+    registerTFCommand( "blockmobfalldamage", "BlockMobFallDamage" );
     registerSubCommand( "creeperbuff", new CreeperBuff(plugin) );
   }
 
@@ -120,10 +120,9 @@ public class EnvironmentMods extends GoldenWindCommand implements Listener {
   public void onSpawn(CreatureSpawnEvent event) {
     LivingEntity entity = event.getEntity();
 
-    ConfigurationSection conf = config.getConfigurationSection("EnvironmentMods");
-    boolean blockIronGolems = conf.getBoolean( "BlockIronGolems" );
-    int creeperFuseTicks = conf.getInt( "CreeperBuff.FuseTicks" );
-    int creeperDamageRadius = conf.getInt( "CreeperBuff.DamageRadius" );
+    boolean blockIronGolems = config.getBoolean( "BlockIronGolems" );
+    int creeperFuseTicks = config.getInt( "CreeperBuff.FuseTicks" );
+    int creeperDamageRadius = config.getInt( "CreeperBuff.DamageRadius" );
 
     
     if (entity.getType() == EntityType.IRON_GOLEM && blockIronGolems ) {
@@ -146,11 +145,7 @@ public class EnvironmentMods extends GoldenWindCommand implements Listener {
   @EventHandler(priority = EventPriority.HIGHEST)
   public void onDamage( EntityDamageEvent event )
   {
-
-    ConfigurationSection config = plugin.getConfig().getConfigurationSection("EnvironmentMods");
     boolean blockMobFallDamage = config.getBoolean( "BlockMobFallDamage" );
-
-
 
     if (event.isCancelled()
         || ! blockMobFallDamage
@@ -173,12 +168,8 @@ public class EnvironmentMods extends GoldenWindCommand implements Listener {
 
     Logger log = plugin.getLogger();
 
-    ConfigurationSection config = plugin.getConfig().getConfigurationSection("EnvironmentMods");
     boolean blockVillagerTrades = config.getBoolean( "BlockVillagerTrades" );
     boolean modifyTraderTrades = config.getBoolean( "ModifyTraderTrades" );
-
-    
-
     
     if (e.getRightClicked() instanceof Villager && blockVillagerTrades )
     {

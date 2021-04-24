@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.event.EventHandler;
@@ -87,12 +86,11 @@ public class ExplodingMobs extends GoldenWindCommand implements Listener {
   
   public ExplodingMobs( GoldenWind plugin )
   {
-    super(plugin);
+    super(plugin, CONFIG_NAME);
 
-    registerCommand( "enable", this::enable );
-    registerCommand( "disable", this::disable );
+    registerEnableDisableCommand();
     registerCommand( "radius", this::radius, 1, new String[]{"<double>"} );
-    registerTFCommand( "fire", CONFIG_NAME, "Fire" );
+    registerTFCommand( "fire", "Fire" );
 
     initArea();
   }
@@ -103,32 +101,30 @@ public class ExplodingMobs extends GoldenWindCommand implements Listener {
   
     if ( entity instanceof Monster )
     {
-      ConfigurationSection config = plugin.getConfig().getConfigurationSection("ExplodingMobs");
-      
-      if ( config.getBoolean("Enabled") == true )
+      if ( ! enabled() )
       {
-        Location loc = entity.getLocation();
+        return;
+      }
+      
+      Location loc = entity.getLocation();
 
-        boolean inArea = false;
-        for ( Area a: areas )
-        {
-          inArea |= a.inArea(loc);
-        }
+      boolean inArea = false;
+      for (Area a : areas) {
+        inArea |= a.inArea(loc);
+      }
 
-        if ( inArea )
-        {
-          loc.subtract(0, 1, 0);
+      if (inArea) {
+        loc.subtract(0, 1, 0);
 
-          World w = loc.getWorld();
+        World w = loc.getWorld();
 
-          int radius = config.getInt("Radius");
-          Boolean fire = config.getBoolean("Fire");
-          w.createExplosion(loc, radius, fire);
+        int radius = config.getInt("Radius");
+        Boolean fire = config.getBoolean("Fire");
+        w.createExplosion(loc, radius, fire);
 
-          event.setCancelled(true);
+        event.setCancelled(true);
 
-          log.info( "Monster BOOM");
-        }
+        log.info("Monster BOOM");
       }
     }
   }
@@ -136,9 +132,6 @@ public class ExplodingMobs extends GoldenWindCommand implements Listener {
 
   private void initArea()
   {
-    ConfigurationSection config = plugin.getConfig().getConfigurationSection(CONFIG_NAME);
-    if ( config != null )
-    {
       List<?> areasConfig = config.getList("Areas");
       if ( areasConfig != null )
       {
@@ -186,35 +179,23 @@ public class ExplodingMobs extends GoldenWindCommand implements Listener {
             }
           }
         }
-      }
     }
 
   }
   
   
-  boolean enable( String[] args )
-  {
-    config.set( CONFIG_NAME + ".Enabled", true);
-    return true;
-  }
-    
-  boolean disable( String[] args )
-  {
-    config.set( CONFIG_NAME + ".Enabled", false);
-    return true;
-  }
 
   boolean radius( String[] args )
   {
     try
     {
-      float radius = Float.parseFloat(args[0]);
+      double radius = Double.parseDouble(args[0]);
         
       if ( radius < 0 || radius > 64 )
       {
         return false;
       }
-      config.set( CONFIG_NAME + ".Radius", radius );
+      config.set( "Radius", radius );
     }
     catch( java.lang.NumberFormatException e )
     {

@@ -1,0 +1,3 @@
+- Stealthy join / leave ( PlayerJoinEvent )
+- Eliminate mending books from mobdrops, fishing, and chests
+

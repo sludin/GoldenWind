@@ -14,22 +14,20 @@ import org.bukkit.event.player.PlayerBedEnterEvent;
 public class SleepOnHalf extends GoldenWindCommand implements Listener
 {
 
-  private final String CONFIG_NAME = "SleepOnHalf";
+  private static final String CONFIG_NAME = "SleepOnHalf";
   
   public SleepOnHalf( GoldenWind plugin )
   {
-    super(plugin);
+    super(plugin, CONFIG_NAME);
 
-    registerCommand( "enable", this::enable );
-    registerCommand( "disable", this::disable );
+    registerEnableDisableCommand();
     registerCommand( "ratio", this::ratio, 1 );
   }
 
   @EventHandler
   public void onBedEnterEvent( PlayerBedEnterEvent e ) 
   {
-    ConfigurationSection config = plugin.getConfig().getConfigurationSection(CONFIG_NAME);
-    if ( config.getBoolean("Enabled") != true )
+    if ( ! enabled() )
     {
       return;
     }
@@ -69,21 +67,15 @@ public class SleepOnHalf extends GoldenWindCommand implements Listener
   @EventHandler
   public void onBedExitEvent( PlayerBedLeaveEvent e ) 
   {
+    if ( ! enabled() )
+    {
+      return;
+    }
+
     log.info( "Player got up (" + e.getPlayer().getName() + ")");
 		plugin.getSleepingList().remove(e.getPlayer());
   }
 
-  boolean enable( String[] args )
-  {
-    config.set( CONFIG_NAME + ".Enabled", true);
-    return true;
-  }
-    
-  boolean disable( String[] args )
-  {
-    config.set( CONFIG_NAME + ".Enabled", false);
-    return true;
-  }
 
   boolean ratio( String[] args )
   {
@@ -95,7 +87,7 @@ public class SleepOnHalf extends GoldenWindCommand implements Listener
       {
         return false;
       }
-      config.set( CONFIG_NAME + ".Ratio", ratio );
+      config.set( "Ratio", ratio );
     }
     catch( java.lang.NumberFormatException e )
     {

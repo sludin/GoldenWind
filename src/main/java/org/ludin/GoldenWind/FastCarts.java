@@ -14,10 +14,9 @@ public class FastCarts extends GoldenWindCommand implements Listener {
   
   public FastCarts( GoldenWind plugin )
   {
-    super(plugin);
+    super(plugin, CONFIG_NAME);
 
-    registerCommand( "enable", this::enable );
-    registerCommand( "disable", this::disable );
+    registerEnableDisableCommand();
     registerCommand( "speed", this::speed, 1, new String[]{"<double>"} );
 
   }
@@ -25,8 +24,8 @@ public class FastCarts extends GoldenWindCommand implements Listener {
   @EventHandler
   public void onVehicleCreate(VehicleCreateEvent event)
   {
-    ConfigurationSection conf = config.getConfigurationSection(CONFIG_NAME);
-    if ( conf.getBoolean("Enabled") != true )
+
+    if ( ! enabled() )
     {
       return;
     }
@@ -39,25 +38,12 @@ public class FastCarts extends GoldenWindCommand implements Listener {
       return;
     }
     
-    log.info("Setting speed to: " + conf.getDouble("Speed"));
+    log.info("Setting speed to: " + config.getDouble("Speed"));
     Minecart cart = (Minecart)vehicle;
-    cart.setMaxSpeed( conf.getDouble("Speed") );
+    cart.setMaxSpeed( config.getDouble("Speed") );
   }
 
 
-  
-  
-  boolean enable( String[] args )
-  {
-    config.set( CONFIG_NAME + ".Enabled", true);
-    return true;
-  }
-    
-  boolean disable( String[] args )
-  {
-    config.set( CONFIG_NAME + ".Enabled", false);
-    return true;
-  }
 
   boolean speed( String[] args )
   {
@@ -74,7 +60,7 @@ public class FastCarts extends GoldenWindCommand implements Listener {
         speed = 1.0;
       }
       
-      config.set( CONFIG_NAME + ".Speed", speed );
+      config.set( "Speed", speed );
     }
     catch( java.lang.NumberFormatException e )
     {

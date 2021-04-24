@@ -33,6 +33,8 @@ public class GoldenWind extends JavaPlugin
     getServer().getPluginManager().registerEvents(new EnvironmentMods(this), this);
     getServer().getPluginManager().registerEvents(new FastCarts(this), this);
     getServer().getPluginManager().registerEvents(new Items(this), this);
+    getServer().getPluginManager().registerEvents(new PlayerMask(this), this);
+    getServer().getPluginManager().registerEvents(new BlockAutoFish(this), this);
     getServer().getPluginManager().registerEvents(new LootTableListener(this), this);
         
     getLogger().info(getConfig().saveToString());

@@ -31,18 +31,17 @@ public class Items extends GoldenWindCommand implements Listener {
   
   public Items( GoldenWind plugin )
   {
-    super(plugin);
+    super(plugin, CONFIG_NAME);
 
-    registerTFCommand( "mendingnetherite", CONFIG_NAME, "MendingNetherite" );
-    registerTFCommand( "blockmending", CONFIG_NAME, "BlockMending" );
+    registerTFCommand( "mendingnetherite", "MendingNetherite" );
+    registerTFCommand( "blockmending", "BlockMending" );
   }
 
   // MendingNetherite
   @EventHandler
   public void onSmithItemEvent(SmithItemEvent event)
   {
-    ConfigurationSection conf = config.getConfigurationSection("Items");
-    if ( conf.getBoolean( "MendingNetherite" ) != true )
+    if ( config.getBoolean( "MendingNetherite" ) != true )
     {
       return;
     }

@@ -14,3 +14,6 @@ commands:
     usage: /goldenwind
     permission: GoldenWind.goldenwind
     permission-message: You don't have <permission>
+
+    
+    

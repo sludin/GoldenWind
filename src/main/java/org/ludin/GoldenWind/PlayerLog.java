@@ -7,26 +7,22 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 public class PlayerLog extends GoldenWindCommand implements Runnable
 {
-  private final String CONFIG_NAME = "PlayerLog";
+  public final static String CONFIG_NAME = "PlayerLog";
 
   public PlayerLog( GoldenWind plugin )
   {
-    super(plugin);
-    
-    registerCommand( "enable", this::enable );
-    registerCommand( "disable", this::disable );
+    super(plugin, CONFIG_NAME);
+    registerEnableDisableCommand();
   }
 
   @Override
   public void run() {
 
-    ConfigurationSection config = plugin.getConfig().getConfigurationSection(CONFIG_NAME);
-    if ( config.getBoolean("Enabled") != true )
+    if ( ! enabled() )
     {
       return;
     }
@@ -71,16 +67,5 @@ public class PlayerLog extends GoldenWindCommand implements Runnable
   }
 
 
-  boolean enable( String[] args )
-  {
-    config.set( CONFIG_NAME + ".Enabled", true);
-    return true;
-  }
-    
-  boolean disable( String[] args )
-  {
-    config.set( CONFIG_NAME + ".Enabled", false);
-    return true;
-  }
 
 }
