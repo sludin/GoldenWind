@@ -1,15 +1,17 @@
 package org.ludin.GoldenWind;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerBedEnterEvent.BedEnterResult;
 import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.player.PlayerBedLeaveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
 
 public class SleepOnHalf extends GoldenWindCommand implements Listener
 {
@@ -24,6 +26,44 @@ public class SleepOnHalf extends GoldenWindCommand implements Listener
     registerCommand( "ratio", this::ratio, 1 );
   }
 
+  private void checkForSleep( boolean leaving )
+  {
+    ArrayList<Player> sleeping = plugin.getSleepingList();
+    double ratio = config.getDouble("Ratio");
+
+    int nOnline = plugin.getServer().getOnlinePlayers().stream()
+                  .filter(p -> p.getWorld().getEnvironment() == World.Environment.NORMAL)
+                  .collect(Collectors.toList())
+                  .size();
+
+    if ( leaving && nOnline > 0)
+    {
+      nOnline--;
+      if ( nOnline == 0 )
+      {
+        return;
+      }
+    }
+    
+    int nAsleep = sleeping.size();
+
+    double ratioAsleep = ((double) nAsleep / (double) nOnline) * 100.0;
+
+    if (ratioAsleep >= ratio) {
+
+      log.info(ratioAsleep + "% players asleep. Skipping to morning");
+
+      World world = plugin.getSleepingList().get(0).getWorld();
+      world.setTime(0);
+
+      for (Player p : sleeping) {
+        p.setHealth(20);
+        p.setFoodLevel(20);
+      }
+
+    }
+  }
+  
   @EventHandler
   public void onBedEnterEvent( PlayerBedEnterEvent e ) 
   {
@@ -32,38 +72,56 @@ public class SleepOnHalf extends GoldenWindCommand implements Listener
       return;
     }
 
-    double ratio = config.getDouble("Ratio");
 
     if( e.getBedEnterResult() == BedEnterResult.OK )
     {
       ArrayList<Player> sleeping = plugin.getSleepingList();
       
       sleeping.add(e.getPlayer());
-
-      int nOnline = plugin.getServer().getOnlinePlayers().size();
-      int nAsleep = sleeping.size();
-
-      double ratioAsleep = ((double) nAsleep / (double) nOnline) * 100.0;
-      
       log.info( "Player went to sleep (" + e.getPlayer().getName() + ")");
 
-      if (ratioAsleep >= ratio) {
-
-        log.info( ratioAsleep + "% players asleep. Skipping to morning");
-
-        World world = plugin.getSleepingList().get(0).getWorld();
-        world.setTime(0);
-
-        for ( Player p: sleeping )
-        {
-            p.setHealth(20);
-            p.setFoodLevel(20);
-        }
-        
-      }
+      checkForSleep(false);
     }
   }
 
+  @EventHandler
+  public void onPlayerQuit( PlayerQuitEvent event )
+  {
+    if ( ! enabled() )
+    {
+      return;
+    }
+
+    Player player = event.getPlayer();
+		plugin.getSleepingList().remove(player);
+
+    plugin.getServer().getOnlinePlayers().stream()
+      .filter(p -> p.getWorld().getEnvironment() == World.Environment.NORMAL)
+      .forEach(p -> log.info("On quit: " + p.getName()));
+    
+    
+    checkForSleep(true);
+  }
+  
+
+  @EventHandler
+  public void onPlayerPortal( PlayerPortalEvent event )
+  {
+    if ( ! enabled() )
+    {
+      return;
+    }
+
+    Player player = event.getPlayer();
+		plugin.getSleepingList().remove(player);
+
+    plugin.getServer().getOnlinePlayers().stream()
+      .filter(p -> p.getWorld().getEnvironment() == World.Environment.NORMAL)
+      .forEach(p -> log.info("On portal: " + p.getName()));
+    
+    checkForSleep(true);
+  }
+  
   @EventHandler
   public void onBedExitEvent( PlayerBedLeaveEvent e ) 
   {

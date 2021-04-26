@@ -204,19 +204,19 @@ class GoFish
       Location tloc = bloc.clone();
       tloc.setY( loc.getY() );
 
-      System.out.println( "Threshold: " + rangeThreshold );
-      System.out.println( "Distance: " + tloc.distance(loc) );
-      System.out.println( "Location: " + BlockAutoFish.locToString( loc ));
-      System.out.println( "Prev Location: " + BlockAutoFish.locToString( bloc ));
-      System.out.println( "Test Location: " + BlockAutoFish.locToString( tloc ));
-
       if (tloc.distance(loc) <= rangeThreshold)
       {
+        System.out.println( "Threshold: " + rangeThreshold );
+        System.out.println( "Distance: " + tloc.distance(loc) );
+        System.out.println( "Location: " + BlockAutoFish.locToString( loc ));
+        System.out.println( "Prev Location: " + BlockAutoFish.locToString( bloc ));
+        System.out.println( "Test Location: " + BlockAutoFish.locToString( tloc ));
+
         System.out.println( "Close enough" );
         return true;
       }
 
-      System.out.println( "Too far" );
+      //      System.out.println( "Too far" );
 
     }
     

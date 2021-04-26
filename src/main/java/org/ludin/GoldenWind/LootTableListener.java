@@ -40,45 +40,6 @@ public class LootTableListener implements Listener {
     log = plugin.getLogger();
   }
   
-  @EventHandler
-  public void onLootGenerateEvent(LootGenerateEvent event)
-  {
-    log.info( "Loot Generation:" );
-    log.info( "  " + event.getEntity().toString() );
-    log.info( "  " + event.getInventoryHolder().toString() );
-    log.info( "  " + event.getLoot().toString() );
-    log.info( "  " + event.getLootContext().toString() );
-    log.info( "  " + event.getLootTable().toString() );
-    
-  }
-
-  @EventHandler
-  public void onEntityDeath(EntityDeathEvent event)
-  {
-    log.info( "Entity Death:" );
-    log.info( "  Entity: " + event.getEntity().getType().toString() );
-    log.info( "  Drops: " + event.getDrops().toString() );
-    log.info( "  Exp: " + event.getDroppedExp() );
-  }
-
-  @EventHandler
-  public void onPlayerFish(PlayerFishEvent event)
-  {
-    if ( event.getState() == State.CAUGHT_FISH )
-    {
-      log.info( "Player Fish:" );
-      log.info( "  Caught: " + event.getCaught() != null ? ((Item)event.getCaught()).getItemStack().toString() : "null" );
-      log.info( "  Exp: " + event.getExpToDrop() );
-      log.info( "  State: " + event.getState().toString() );
-    }
-    else
-    {
-      log.info( "Player Fish:" );
-      log.info( "  Exp: " + event.getExpToDrop() );
-      log.info( "  State: " + event.getState().toString() );
-    }
-    
-  }
   
 }
 
